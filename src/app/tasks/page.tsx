@@ -1,10 +1,12 @@
 "use client";
 
-import { CheckSquare, Filter, Plus, Search, MoreHorizontal, Clock, Edit, Trash2, ExternalLink } from "lucide-react";
+import { CheckSquare, Filter, Plus, Search, MoreHorizontal, Clock, Edit, Trash2, ExternalLink, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 export default function TasksPage() {
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [editingTask, setEditingTask] = useState<any>(null);
+  const [viewingTask, setViewingTask] = useState<any>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const [tasks, setTasks] = useState([
@@ -38,6 +40,12 @@ export default function TasksPage() {
   const deleteTask = (id: number) => {
     setTasks(tasks.filter(task => task.id !== id));
     setOpenMenuId(null);
+  };
+
+  const handleUpdateTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    setTasks(tasks.map(t => t.id === editingTask.id ? editingTask : t));
+    setEditingTask(null);
   };
 
   return (
@@ -138,11 +146,23 @@ export default function TasksPage() {
                       ref={menuRef}
                       className="absolute right-6 top-12 w-48 bg-card border border-border rounded-xl shadow-xl p-1 z-50 animate-in fade-in zoom-in-95"
                     >
-                      <button className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2">
+                      <button 
+                        onClick={() => {
+                          setEditingTask(task);
+                          setOpenMenuId(null);
+                        }}
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2"
+                      >
                         <Edit size={14} />
                         Edit Task
                       </button>
-                      <button className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2">
+                      <button 
+                        onClick={() => {
+                          setViewingTask(task);
+                          setOpenMenuId(null);
+                        }}
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2"
+                      >
                         <ExternalLink size={14} />
                         View Details
                       </button>
@@ -162,6 +182,142 @@ export default function TasksPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Edit Modal */}
+      {editingTask && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-border flex items-center justify-between bg-accent/30">
+              <h2 className="text-xl font-bold">Edit Task</h2>
+              <button onClick={() => setEditingTask(null)} className="p-1 hover:bg-accent rounded-full transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateTask} className="p-6 space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Task Name</label>
+                <input 
+                  type="text" 
+                  value={editingTask.title}
+                  onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
+                  className="w-full bg-accent/50 border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Priority</label>
+                  <select 
+                    value={editingTask.priority}
+                    onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value })}
+                    className="w-full bg-accent/50 border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none"
+                  >
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Due Date</label>
+                  <input 
+                    type="text" 
+                    value={editingTask.dueDate}
+                    onChange={(e) => setEditingTask({ ...editingTask, dueDate: e.target.value })}
+                    className="w-full bg-accent/50 border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+              </div>
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setEditingTask(null)}
+                  className="flex-1 px-4 py-2 border border-border rounded-lg text-sm font-medium hover:bg-accent transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Details Modal */}
+      {viewingTask && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-card border border-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-border flex items-center justify-between bg-accent/30">
+              <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded border flex items-center justify-center ${viewingTask.status === 'Done' ? 'bg-primary border-primary text-primary-foreground' : 'border-muted-foreground'}`}>
+                  {viewingTask.status === 'Done' ? <CheckSquare size={16} /> : <Clock size={16} />}
+                </div>
+                <h2 className="text-xl font-bold">Task Details</h2>
+              </div>
+              <button onClick={() => setViewingTask(null)} className="p-1 hover:bg-accent rounded-full transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div>
+                <h3 className="text-2xl font-bold mb-2">{viewingTask.title}</h3>
+                <span className="text-sm px-3 py-1 bg-accent rounded-md text-foreground/80 font-medium">
+                  Project: {viewingTask.project}
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6 bg-accent/20 p-4 rounded-xl border border-border/50">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Status</p>
+                  <span className={`text-sm px-3 py-1 rounded-full font-medium ${
+                    viewingTask.status === 'Done' ? 'bg-green-500/20 text-green-500' : 
+                    viewingTask.status === 'In Progress' ? 'bg-orange-500/20 text-orange-500' : 'bg-blue-500/20 text-blue-500'
+                  }`}>
+                    {viewingTask.status}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Priority</p>
+                  <span className={`text-sm font-bold ${
+                    viewingTask.priority === 'High' ? 'text-red-500' : 
+                    viewingTask.priority === 'Medium' ? 'text-orange-500' : 'text-green-500'
+                  }`}>
+                    {viewingTask.priority}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Due Date</p>
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Clock size={16} className="text-muted-foreground" />
+                    {viewingTask.dueDate}
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <p className="text-sm font-medium mb-2">Description</p>
+                <div className="p-4 bg-accent/20 rounded-xl border border-border/50 text-sm text-muted-foreground leading-relaxed min-h-[100px]">
+                  No detailed description provided for this task yet.
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-6 border-t border-border flex justify-end gap-3 bg-accent/10">
+              <button 
+                onClick={() => setViewingTask(null)}
+                className="px-6 py-2 border border-border rounded-lg text-sm font-medium hover:bg-accent transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -79,7 +79,7 @@ export default function Dashboard() {
               <MoreHorizontal size={20} />
             </button>
           </div>
-          <div className="flex-1 min-h-[300px] mt-4">
+          <div className="h-[300px] w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={data}
