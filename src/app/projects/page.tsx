@@ -3,57 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, Filter, Plus, MoreHorizontal, Calendar, Clock, CheckCircle2, Circle, AlertCircle, Trash2, Edit, X } from "lucide-react";
 
-// Mock data
-const mockProjects = [
-  {
-    id: 1,
-    name: "Website Redesign",
-    description: "Overhaul the corporate website with a new modern design system and better UX.",
-    status: "Active",
-    progress: 65,
-    dueDate: "2026-06-15",
-    team: [
-      "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-      "https://i.pravatar.cc/150?u=a04258114e29026702d",
-    ],
-  },
-  {
-    id: 2,
-    name: "Mobile App Launch",
-    description: "Develop and launch the iOS and Android mobile app for clients.",
-    status: "Planning",
-    progress: 15,
-    dueDate: "2026-08-01",
-    team: [
-      "https://i.pravatar.cc/150?u=a04258114e29026703d",
-      "https://i.pravatar.cc/150?u=a04258114e29026704d",
-      "https://i.pravatar.cc/150?u=a04258114e29026705d",
-    ],
-  },
-  {
-    id: 3,
-    name: "Q3 Marketing Campaign",
-    description: "Prepare social media assets and ad copy for the upcoming Q3 campaign.",
-    status: "On Hold",
-    progress: 40,
-    dueDate: "2026-07-20",
-    team: [
-      "https://i.pravatar.cc/150?u=a04258114e29026706d",
-    ],
-  },
-  {
-    id: 4,
-    name: "Database Migration",
-    description: "Migrate legacy database to the new cloud infrastructure.",
-    status: "Completed",
-    progress: 100,
-    dueDate: "2026-05-01",
-    team: [
-      "https://i.pravatar.cc/150?u=a04258114e29026703d",
-      "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-    ],
-  },
-];
+import { mockProjects, Project } from "@/lib/mockData";
+import Link from "next/link";
 
 const statusColors: Record<string, string> = {
   "Active": "bg-blue-500/20 text-blue-500 border-blue-500/20",
@@ -176,8 +127,8 @@ export default function ProjectsPage() {
 
       {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredProjects.map(project => (
-          <div key={project.id} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:border-primary/50 transition-all flex flex-col group relative overflow-hidden">
+        {filteredProjects.map((project: Project) => (
+          <Link href={`/board?projectId=${project.id}`} key={project.id} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:border-primary/50 transition-all flex flex-col group relative overflow-hidden block">
             {/* Status indicator line on top */}
             <div className={`absolute top-0 left-0 right-0 h-1 ${project.status === "Completed" ? "bg-green-500" : project.status === "Active" ? "bg-blue-500" : project.status === "Planning" ? "bg-purple-500" : "bg-orange-500"}`}></div>
             
@@ -189,6 +140,7 @@ export default function ProjectsPage() {
               <div className="relative">
                 <button 
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     setOpenMenuId(openMenuId === project.id ? null : project.id);
                   }}
@@ -203,7 +155,9 @@ export default function ProjectsPage() {
                     className="absolute right-0 top-9 w-40 bg-card border border-border rounded-xl shadow-xl p-1 z-50 animate-in fade-in zoom-in-95"
                   >
                     <button 
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         setEditingProject(project);
                         setOpenMenuId(null);
                       }}
@@ -214,7 +168,11 @@ export default function ProjectsPage() {
                     </button>
                     <div className="h-px bg-border my-1"></div>
                     <button 
-                      onClick={() => handleDeleteProject(project.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDeleteProject(project.id);
+                      }}
                       className="w-full text-left px-3 py-2 hover:bg-destructive/10 hover:text-destructive text-destructive rounded-lg text-sm transition-colors flex items-center gap-2"
                     >
                       <Trash2 size={14} />
@@ -262,7 +220,7 @@ export default function ProjectsPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
         {filteredProjects.length === 0 && (
           <div className="col-span-full py-12 flex flex-col items-center justify-center text-center bg-card/50 border border-border border-dashed rounded-xl">

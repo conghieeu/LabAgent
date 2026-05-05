@@ -1,59 +1,45 @@
 "use client";
 
-import { MoreHorizontal, Plus, Filter, Search } from "lucide-react";
-import { useState, useEffect } from "react";
+import { MoreHorizontal, Plus, Filter, Search, FolderKanban } from "lucide-react";
+import { useState, useEffect, Suspense } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
+import { mockProjects, mockBoards, defaultEmptyBoard } from "@/lib/mockData";
+import { useSearchParams, useRouter } from "next/navigation";
 
-const initialData = {
-  columns: {
-    "todo": {
-      id: "todo",
-      title: "To Do",
-      color: "border-blue-500/50",
-      taskIds: ["t1", "t2", "t3", "t4"],
-    },
-    "in-progress": {
-      id: "in-progress",
-      title: "In Progress",
-      color: "border-orange-500/50",
-      taskIds: ["t5", "t6"],
-    },
-    "in-review": {
-      id: "in-review",
-      title: "In Review",
-      color: "border-purple-500/50",
-      taskIds: ["t7", "t8", "t9"],
-    },
-    "done": {
-      id: "done",
-      title: "Done",
-      color: "border-green-500/50",
-      taskIds: ["t10", "t11"],
-    },
-  },
-  tasks: {
-    "t1": { id: "t1", title: "Design System Updates", tag: "Design", priority: "High", date: "Oct 24" },
-    "t2": { id: "t2", title: "API Integration", tag: "Dev", priority: "Medium", date: "Oct 25" },
-    "t3": { id: "t3", title: "Client Feedback Review", tag: "Management", priority: "Low", date: "Oct 26" },
-    "t4": { id: "t4", title: "Landing Page Copy", tag: "Marketing", priority: "Medium", date: "Oct 27" },
-    "t5": { id: "t5", title: "Dashboard Implementation", tag: "Dev", priority: "High", date: "Oct 24" },
-    "t6": { id: "t6", title: "User Research Analysis", tag: "Research", priority: "Medium", date: "Oct 25" },
-    "t7": { id: "t7", title: "Login Authentication", tag: "Dev", priority: "High", date: "Oct 23" },
-    "t8": { id: "t8", title: "Weekly Report", tag: "Management", priority: "Low", date: "Oct 23" },
-    "t9": { id: "t9", title: "Social Media Assets", tag: "Marketing", priority: "Medium", date: "Oct 23" },
-    "t10": { id: "t10", title: "Project Setup", tag: "Dev", priority: "High", date: "Oct 20" },
-    "t11": { id: "t11", title: "Initial Wireframes", tag: "Design", priority: "High", date: "Oct 21" },
-  },
-  columnOrder: ["todo", "in-progress", "in-review", "done"],
-};
-
-export default function KanbanBoard() {
-  const [data, setData] = useState(initialData);
+function KanbanBoardContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  const projectIdParam = searchParams.get("projectId");
+  const initialProjectId = projectIdParam ? parseInt(projectIdParam) : null;
+  
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(initialProjectId);
+  const [data, setData] = useState(() => {
+    if (initialProjectId && mockBoards[initialProjectId as keyof typeof mockBoards]) {
+      return mockBoards[initialProjectId as keyof typeof mockBoards];
+    }
+    return defaultEmptyBoard;
+  });
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Update data when project changes
+  useEffect(() => {
+    if (selectedProjectId && mockBoards[selectedProjectId as keyof typeof mockBoards]) {
+      setData(mockBoards[selectedProjectId as keyof typeof mockBoards]);
+    } else {
+      setData(defaultEmptyBoard);
+    }
+  }, [selectedProjectId]);
+
+  const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newId = parseInt(e.target.value);
+    setSelectedProjectId(newId);
+    router.push(`/board?projectId=${newId}`);
+  };
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -102,14 +88,39 @@ export default function KanbanBoard() {
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       {/* Board Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-1">Kanban Board</h1>
-          <p className="text-muted-foreground">Manage your project tasks by moving them across columns.</p>
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-8">
+        <div className="flex flex-col md:flex-row gap-6 md:items-center">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight mb-1">Kanban Board</h1>
+            <p className="text-muted-foreground">Manage your project tasks by moving them across columns.</p>
+          </div>
+          
+          <div className="h-10 w-px bg-border hidden md:block mx-2"></div>
+          
+          {/* Project Selector */}
+          <div className="w-full md:w-64">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Select Project</label>
+            <div className="relative">
+              <FolderKanban size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-primary" />
+              <select 
+                value={selectedProjectId || ""}
+                onChange={handleProjectChange}
+                className="w-full appearance-none bg-primary/10 text-primary font-medium border border-primary/20 rounded-lg pl-10 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+              >
+                <option value="" disabled>Choose a project...</option>
+                {mockProjects.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-2 md:gap-4 w-full md:w-auto">
-          <div className="relative flex-1 min-w-[200px] md:min-w-0">
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 w-full xl:w-auto">
+          <div className="relative flex-1 min-w-[200px] xl:min-w-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/50" size={16} />
             <input 
               type="text" 
@@ -121,99 +132,122 @@ export default function KanbanBoard() {
             <Filter size={18} />
             <span>Filter</span>
           </button>
-          <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors flex-1 md:flex-none">
+          <button 
+            disabled={!selectedProjectId}
+            className={`px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors flex-1 md:flex-none ${!selectedProjectId ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'bg-primary hover:bg-primary/90 text-primary-foreground'}`}
+          >
             <Plus size={20} />
             <span className="whitespace-nowrap">New Task</span>
           </button>
         </div>
       </div>
 
-      {/* Kanban Columns */}
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex-1 overflow-x-auto pb-4">
-          <div className="flex gap-6 min-w-max h-full">
-            {data.columnOrder.map((columnId) => {
-              const column = data.columns[columnId as keyof typeof data.columns];
-              const tasks = column.taskIds.map(taskId => data.tasks[taskId as keyof typeof data.tasks]);
-
-              return (
-                <div key={column.id} className="w-[320px] flex flex-col h-full">
-                  {/* Column Header */}
-                  <div className={`flex items-center justify-between mb-4 pb-2 border-b-2 ${column.color}`}>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold">{column.title}</h3>
-                      <span className="bg-accent text-xs px-2 py-0.5 rounded-full font-medium">
-                        {tasks.length}
-                      </span>
-                    </div>
-                    <button className="text-muted-foreground hover:text-foreground">
-                      <MoreHorizontal size={18} />
-                    </button>
-                  </div>
-
-                  {/* Column Tasks Container */}
-                  <Droppable droppableId={column.id}>
-                    {(provided, snapshot) => (
-                      <div 
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className={`flex-1 bg-accent/20 rounded-xl p-3 flex flex-col gap-3 overflow-y-auto border border-border/50 transition-colors ${snapshot.isDraggingOver ? 'bg-accent/40 border-primary/30' : ''}`}
-                      >
-                        {tasks.map((task, index) => (
-                          <Draggable key={task.id} draggableId={task.id} index={index}>
-                            {(provided, snapshot) => (
-                              <div 
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`bg-card border border-border rounded-lg p-4 shadow-sm hover:border-primary/50 transition-colors ${snapshot.isDragging ? 'shadow-lg border-primary/70 rotate-2' : ''}`}
-                                style={provided.draggableProps.style}
-                              >
-                                <div className="flex justify-between items-start mb-2">
-                                  <span className="text-xs px-2 py-1 rounded-md bg-accent font-medium text-foreground/80">
-                                    {task.tag}
-                                  </span>
-                                  <button className="text-muted-foreground hover:text-foreground">
-                                    <MoreHorizontal size={16} />
-                                  </button>
-                                </div>
-                                <h4 className="font-medium mb-3 text-sm leading-snug">{task.title}</h4>
-                                
-                                <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/50">
-                                  <div className="flex -space-x-2">
-                                    <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-card z-10"></div>
-                                    <div className="w-6 h-6 rounded-full bg-purple-500 border-2 border-card z-0"></div>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <span className={`text-[10px] uppercase font-bold tracking-wider ${
-                                      task.priority === 'High' ? 'text-red-500' : 
-                                      task.priority === 'Medium' ? 'text-orange-500' : 'text-green-500'
-                                    }`}>
-                                      {task.priority}
-                                    </span>
-                                    <span className="text-xs text-muted-foreground">{task.date}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                        
-                        {/* Add Task Button */}
-                        <button className="w-full py-3 mt-2 rounded-lg border border-dashed border-border text-muted-foreground hover:text-foreground hover:bg-accent/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                          <Plus size={16} />
-                          Add Task
-                        </button>
-                      </div>
-                    )}
-                  </Droppable>
-                </div>
-              );
-            })}
+      {!selectedProjectId ? (
+        <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-border rounded-2xl bg-card/30">
+          <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
+            <FolderKanban size={40} />
           </div>
+          <h2 className="text-2xl font-bold mb-2">No Project Selected</h2>
+          <p className="text-muted-foreground text-center max-w-md">
+            Please select a project from the dropdown menu above to view and manage its Kanban board.
+          </p>
         </div>
-      </DragDropContext>
+      ) : (
+        /* Kanban Columns */
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className="flex-1 overflow-x-auto pb-4">
+            <div className="flex gap-6 min-w-max h-full">
+              {data.columnOrder.map((columnId) => {
+                const column = data.columns[columnId as keyof typeof data.columns];
+                const tasks = column.taskIds.map(taskId => data.tasks[taskId as keyof typeof data.tasks]);
+
+                return (
+                  <div key={column.id} className="w-[320px] flex flex-col h-full">
+                    {/* Column Header */}
+                    <div className={`flex items-center justify-between mb-4 pb-2 border-b-2 ${column.color}`}>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold">{column.title}</h3>
+                        <span className="bg-accent text-xs px-2 py-0.5 rounded-full font-medium">
+                          {tasks.length}
+                        </span>
+                      </div>
+                      <button className="text-muted-foreground hover:text-foreground">
+                        <MoreHorizontal size={18} />
+                      </button>
+                    </div>
+
+                    {/* Column Tasks Container */}
+                    <Droppable droppableId={column.id}>
+                      {(provided, snapshot) => (
+                        <div 
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className={`flex-1 bg-accent/20 rounded-xl p-3 flex flex-col gap-3 overflow-y-auto border border-border/50 transition-colors ${snapshot.isDraggingOver ? 'bg-accent/40 border-primary/30' : ''}`}
+                        >
+                          {tasks.map((task, index) => (
+                            <Draggable key={task.id} draggableId={task.id} index={index}>
+                              {(provided, snapshot) => (
+                                <div 
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`bg-card border border-border rounded-lg p-4 shadow-sm hover:border-primary/50 transition-colors ${snapshot.isDragging ? 'shadow-lg border-primary/70 rotate-2' : ''}`}
+                                  style={provided.draggableProps.style}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <span className="text-xs px-2 py-1 rounded-md bg-accent font-medium text-foreground/80">
+                                      {task.tag}
+                                    </span>
+                                    <button className="text-muted-foreground hover:text-foreground">
+                                      <MoreHorizontal size={16} />
+                                    </button>
+                                  </div>
+                                  <h4 className="font-medium mb-3 text-sm leading-snug">{task.title}</h4>
+                                  
+                                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/50">
+                                    <div className="flex -space-x-2">
+                                      <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-card z-10"></div>
+                                      <div className="w-6 h-6 rounded-full bg-purple-500 border-2 border-card z-0"></div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                      <span className={`text-[10px] uppercase font-bold tracking-wider ${
+                                        task.priority === 'High' ? 'text-red-500' : 
+                                        task.priority === 'Medium' ? 'text-orange-500' : 'text-green-500'
+                                      }`}>
+                                        {task.priority}
+                                      </span>
+                                      <span className="text-xs text-muted-foreground">{task.date}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                          
+                          {/* Add Task Button */}
+                          <button className="w-full py-3 mt-2 rounded-lg border border-dashed border-border text-muted-foreground hover:text-foreground hover:bg-accent/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                            <Plus size={16} />
+                            Add Task
+                          </button>
+                        </div>
+                      )}
+                    </Droppable>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </DragDropContext>
+      )}
     </div>
+  );
+}
+
+export default function KanbanBoard() {
+  return (
+    <Suspense fallback={<div className="flex h-full items-center justify-center text-muted-foreground">Loading board...</div>}>
+      <KanbanBoardContent />
+    </Suspense>
   );
 }
