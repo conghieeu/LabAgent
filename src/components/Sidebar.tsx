@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, KanbanSquare, CheckSquare, Users, BarChart2, Settings, Inbox, X } from "lucide-react";
+import { LayoutDashboard, KanbanSquare, CheckSquare, Users, BarChart2, Settings, Inbox, X, Folder } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "@/context/SidebarContext";
@@ -11,6 +11,7 @@ export function Sidebar() {
 
   const navItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
+    { name: "Projects", href: "/projects", icon: Folder },
     { name: "Inbox", href: "/notifications", icon: Inbox },
     { name: "Kanban Board", href: "/board", icon: KanbanSquare },
     { name: "My Tasks", href: "/tasks", icon: CheckSquare },
