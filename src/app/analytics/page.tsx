@@ -35,12 +35,12 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart Mockup */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col min-h-[400px]">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
               <h2 className="text-xl font-bold">Productivity Trends</h2>
               <p className="text-sm text-muted-foreground">Tasks completed over the last 30 days</p>
             </div>
-            <select className="bg-accent border border-border rounded-lg px-3 py-1.5 text-sm outline-none">
+            <select className="bg-accent border border-border rounded-lg px-3 py-1.5 text-sm outline-none w-full sm:w-auto">
               <option>Last 30 Days</option>
               <option>This Week</option>
               <option>This Year</option>

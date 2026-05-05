@@ -50,33 +50,128 @@ export default function TasksPage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-1">My Tasks</h1>
           <p className="text-muted-foreground">Manage your assigned tasks and track upcoming deadlines.</p>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="relative">
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 w-full md:w-auto">
+          <div className="relative flex-1 min-w-[200px] md:min-w-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/50" size={16} />
             <input 
               type="text" 
               placeholder="Search tasks..." 
-              className="bg-accent/50 border border-border rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full bg-accent/50 border border-border rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
           </div>
-          <button className="bg-accent hover:bg-accent/80 text-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors border border-border">
+          <button className="bg-accent hover:bg-accent/80 text-foreground px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors border border-border flex-1 md:flex-none">
             <Filter size={18} />
             <span>Filter</span>
           </button>
-          <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+          <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors flex-1 md:flex-none">
             <Plus size={20} />
-            <span>Add Task</span>
+            <span className="whitespace-nowrap">Add Task</span>
           </button>
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-xl shadow-sm overflow-visible mt-4">
+      {/* Mobile Tasks List */}
+      <div className="grid md:hidden gap-4 mt-2">
+        {tasks.map((task) => (
+          <div key={task.id} className="bg-card border border-border rounded-xl p-4 shadow-sm relative flex flex-col gap-3">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <div 
+                  onClick={() => toggleStatus(task.id)}
+                  className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center cursor-pointer shrink-0 transition-colors ${task.status === 'Done' ? 'bg-primary border-primary text-primary-foreground' : 'border-muted-foreground hover:border-primary'}`}
+                >
+                  {task.status === 'Done' && <CheckSquare size={14} />}
+                </div>
+                <div className="min-w-0">
+                  <h3 className={`font-medium truncate transition-all ${task.status === 'Done' ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
+                    {task.title}
+                  </h3>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    <span className="text-xs px-2 py-0.5 bg-accent rounded-md text-foreground/80 truncate max-w-full">
+                      {task.project}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="relative">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenMenuId(openMenuId === task.id ? null : task.id);
+                  }}
+                  className={`p-1.5 rounded-lg shrink-0 transition-all ${openMenuId === task.id ? 'bg-accent text-foreground' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`}
+                >
+                  <MoreHorizontal size={18} />
+                </button>
+                {openMenuId === task.id && (
+                  <div 
+                    ref={menuRef}
+                    className="absolute right-0 top-10 w-48 bg-card border border-border rounded-xl shadow-xl p-1 z-50 animate-in fade-in zoom-in-95"
+                  >
+                    <button 
+                      onClick={() => {
+                        setEditingTask(task);
+                        setOpenMenuId(null);
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2"
+                    >
+                      <Edit size={14} />
+                      Edit Task
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setViewingTask(task);
+                        setOpenMenuId(null);
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2"
+                    >
+                      <ExternalLink size={14} />
+                      View Details
+                    </button>
+                    <div className="h-px bg-border my-1"></div>
+                    <button 
+                      onClick={() => deleteTask(task.id)}
+                      className="w-full text-left px-3 py-2 hover:bg-destructive/10 hover:text-destructive rounded-lg text-sm transition-colors flex items-center gap-2"
+                    >
+                      <Trash2 size={14} />
+                      Delete Task
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 items-center text-sm pt-2 border-t border-border/50">
+              <span className={`text-[11px] px-2.5 py-1 rounded-full font-medium transition-all ${
+                task.status === 'Done' ? 'bg-green-500/20 text-green-500' : 
+                task.status === 'In Progress' ? 'bg-orange-500/20 text-orange-500' : 'bg-blue-500/20 text-blue-500'
+              }`}>
+                {task.status}
+              </span>
+              <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full bg-accent/50 border border-border/50 ${
+                task.priority === 'High' ? 'text-red-500' : 
+                task.priority === 'Medium' ? 'text-orange-500' : 'text-green-500'
+              }`}>
+                {task.priority} Priority
+              </span>
+              <div className="flex items-center gap-1.5 text-muted-foreground bg-accent/50 border border-border/50 px-2.5 py-1 rounded-full text-[11px] ml-auto">
+                <Clock size={12} />
+                <span>{task.dueDate}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Tasks Table */}
+      <div className="hidden md:block bg-card border border-border rounded-xl shadow-sm overflow-visible mt-2">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-border bg-accent/30 text-muted-foreground text-sm">
@@ -106,10 +201,10 @@ export default function TasksPage() {
                   </span>
                 </td>
                 <td className="py-4 px-6">
-                  <span className="text-sm px-2.5 py-1 bg-accent rounded-md text-foreground/80">{task.project}</span>
+                  <span className="text-sm px-2.5 py-1 bg-accent rounded-md text-foreground/80 whitespace-nowrap">{task.project}</span>
                 </td>
                 <td className="py-4 px-6">
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-medium transition-all ${
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-medium whitespace-nowrap transition-all ${
                     task.status === 'Done' ? 'bg-green-500/20 text-green-500' : 
                     task.status === 'In Progress' ? 'bg-orange-500/20 text-orange-500' : 'bg-blue-500/20 text-blue-500'
                   }`}>
@@ -117,7 +212,7 @@ export default function TasksPage() {
                   </span>
                 </td>
                 <td className="py-4 px-6">
-                  <span className={`text-sm font-medium ${
+                  <span className={`text-sm font-medium whitespace-nowrap ${
                     task.priority === 'High' ? 'text-red-500' : 
                     task.priority === 'Medium' ? 'text-orange-500' : 'text-green-500'
                   }`}>
@@ -125,7 +220,7 @@ export default function TasksPage() {
                   </span>
                 </td>
                 <td className="py-4 px-6">
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground whitespace-nowrap">
                     <Clock size={14} />
                     <span>{task.dueDate}</span>
                   </div>
@@ -136,7 +231,7 @@ export default function TasksPage() {
                       e.stopPropagation();
                       setOpenMenuId(openMenuId === task.id ? null : task.id);
                     }}
-                    className={`p-1.5 rounded-lg transition-all ${openMenuId === task.id ? 'bg-accent text-foreground' : 'text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100'}`}
+                    className={`p-1.5 rounded-lg transition-all ${openMenuId === task.id ? 'bg-accent text-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground opacity-0 group-hover:opacity-100'}`}
                   >
                     <MoreHorizontal size={18} />
                   </button>

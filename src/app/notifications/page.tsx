@@ -31,7 +31,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="flex flex-col gap-8 max-w-5xl mx-auto w-full">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-1">Inbox</h1>
           <p className="text-muted-foreground">Catch up on all your notifications and team activities.</p>
@@ -77,28 +77,28 @@ export default function NotificationsPage() {
 
       <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[600px]">
         {/* Inbox Tabs */}
-        <div className="flex items-center gap-6 px-6 border-b border-border bg-accent/20">
+        <div className="flex items-center gap-6 px-6 border-b border-border bg-accent/20 overflow-x-auto scrollbar-hide">
           <button 
             onClick={() => setActiveTab("all")}
-            className={`py-4 font-medium border-b-2 transition-colors ${activeTab === "all" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+            className={`py-4 font-medium border-b-2 whitespace-nowrap transition-colors ${activeTab === "all" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
           >
             All Activity
           </button>
           <button 
             onClick={() => setActiveTab("unread")}
-            className={`py-4 font-medium border-b-2 transition-colors ${activeTab === "unread" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+            className={`py-4 font-medium border-b-2 whitespace-nowrap transition-colors ${activeTab === "unread" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
           >
             Unread
           </button>
           <button 
             onClick={() => setActiveTab("mentions")}
-            className={`py-4 font-medium border-b-2 transition-colors ${activeTab === "mentions" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+            className={`py-4 font-medium border-b-2 whitespace-nowrap transition-colors ${activeTab === "mentions" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
           >
             Mentions
           </button>
           <button 
             onClick={() => setActiveTab("assigned")}
-            className={`py-4 font-medium border-b-2 transition-colors ${activeTab === "assigned" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+            className={`py-4 font-medium border-b-2 whitespace-nowrap transition-colors ${activeTab === "assigned" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
           >
             Assigned to me
           </button>
@@ -127,7 +127,7 @@ export default function NotificationsPage() {
                   </div>
                   
                   <div className="flex-1">
-                    <div className="flex justify-between items-start gap-4 mb-2">
+                    <div className="flex flex-col sm:flex-row sm:justify-between items-start gap-2 sm:gap-4 mb-2">
                       <div className="flex items-center gap-2">
                         <h3 className={`text-base ${notif.unread ? 'font-bold text-foreground' : 'font-medium text-foreground/90'}`}>
                           {notif.title}
@@ -135,11 +135,11 @@ export default function NotificationsPage() {
                         {notif.unread && <span className="w-2 h-2 rounded-full bg-primary shrink-0"></span>}
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-xs font-medium text-muted-foreground bg-accent px-2 py-1 rounded-md">
+                        <span className="text-xs font-medium text-muted-foreground bg-accent px-2 py-1 rounded-md whitespace-nowrap">
                           {notif.project}
                         </span>
                         <span className="text-xs text-muted-foreground whitespace-nowrap">{notif.time}</span>
-                        <button className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">
                           <MoreHorizontal size={16} />
                         </button>
                       </div>

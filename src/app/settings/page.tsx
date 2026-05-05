@@ -56,15 +56,15 @@ export default function SettingsPage() {
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
               <h2 className="text-xl font-bold mb-4">Profile Information</h2>
               
-              <div className="flex items-center gap-6 mb-8">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px]">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mb-8">
+                <div className="w-20 h-20 shrink-0 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px]">
                   <img 
                     src="https://i.pravatar.cc/150?u=a042581f4e29026704d" 
                     alt="User avatar" 
                     className="w-full h-full rounded-full border-4 border-card object-cover"
                   />
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors text-sm">
                     Change Avatar
                   </button>
@@ -172,9 +172,9 @@ export default function SettingsPage() {
 
               <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
                 <h2 className="text-xl font-bold mb-4">Two-Factor Authentication (2FA)</h2>
-                <div className="flex items-center justify-between p-4 bg-accent/30 border border-border rounded-lg">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-primary/10 text-primary rounded-full">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-accent/30 border border-border rounded-lg">
+                  <div className="flex items-start sm:items-center gap-4">
+                    <div className="p-3 bg-primary/10 text-primary rounded-full shrink-0">
                       <ShieldAlert size={24} />
                     </div>
                     <div>
@@ -182,7 +182,7 @@ export default function SettingsPage() {
                       <p className="text-sm text-muted-foreground mt-1">Not configured. We recommend using Google Authenticator.</p>
                     </div>
                   </div>
-                  <button className="bg-accent hover:bg-accent/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors text-sm border border-border">
+                  <button className="bg-accent hover:bg-accent/80 text-foreground px-4 py-2 rounded-lg font-medium transition-colors text-sm border border-border w-full sm:w-auto">
                     Enable 2FA
                   </button>
                 </div>
@@ -191,25 +191,25 @@ export default function SettingsPage() {
               <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
                 <h2 className="text-xl font-bold mb-4">Active Sessions</h2>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between py-3 border-b border-border/50">
-                    <div className="flex items-center gap-3">
-                      <Laptop size={20} className="text-primary" />
+                  <div className="flex items-start sm:items-center justify-between gap-4 py-3 border-b border-border/50">
+                    <div className="flex items-start sm:items-center gap-3">
+                      <Laptop size={20} className="text-primary mt-0.5 sm:mt-0 shrink-0" />
                       <div>
                         <h4 className="text-sm font-medium">Windows PC - Chrome</h4>
                         <p className="text-xs text-muted-foreground mt-0.5">Ho Chi Minh City, VN • Active Now</p>
                       </div>
                     </div>
-                    <span className="text-xs font-medium text-green-500 bg-green-500/10 px-2 py-1 rounded-md">Current</span>
+                    <span className="text-xs font-medium text-green-500 bg-green-500/10 px-2 py-1 rounded-md shrink-0">Current</span>
                   </div>
-                  <div className="flex items-center justify-between py-3">
-                    <div className="flex items-center gap-3">
-                      <Smartphone size={20} className="text-muted-foreground" />
+                  <div className="flex items-start sm:items-center justify-between gap-4 py-3">
+                    <div className="flex items-start sm:items-center gap-3">
+                      <Smartphone size={20} className="text-muted-foreground mt-0.5 sm:mt-0 shrink-0" />
                       <div>
                         <h4 className="text-sm font-medium">iPhone 14 Pro - Safari</h4>
                         <p className="text-xs text-muted-foreground mt-0.5">Hanoi, VN • Last active 2 hours ago</p>
                       </div>
                     </div>
-                    <button className="text-xs font-medium text-destructive hover:underline">Revoke</button>
+                    <button className="text-xs font-medium text-destructive hover:underline shrink-0 mt-1 sm:mt-0">Revoke</button>
                   </div>
                 </div>
               </div>

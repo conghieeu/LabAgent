@@ -1,10 +1,12 @@
 "use client";
 
-import { Bell, Search, Check, Clock, MessageSquare, AlertCircle } from "lucide-react";
+import { Bell, Search, Check, Clock, MessageSquare, AlertCircle, Menu } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useSidebar } from "@/context/SidebarContext";
 
 export function Header() {
+  const { toggleSidebar } = useSidebar();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -44,9 +46,15 @@ export function Header() {
   const hasUnread = notifications.some(n => n.unread);
 
   return (
-    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-8">
-      <div className="flex items-center gap-4 flex-1">
-        <div className="relative w-96" ref={searchRef}>
+    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-4 md:px-8">
+      <div className="flex items-center gap-3 md:gap-4 flex-1">
+        <button 
+          className="md:hidden p-2 -ml-2 text-muted-foreground hover:text-foreground"
+          onClick={toggleSidebar}
+        >
+          <Menu size={24} />
+        </button>
+        <div className="relative hidden md:block w-96" ref={searchRef}>
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/50" size={18} />
           <input 
             type="text" 

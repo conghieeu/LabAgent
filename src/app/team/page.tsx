@@ -109,15 +109,15 @@ export default function TeamPage() {
 
   return (
     <div className="flex flex-col gap-8 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-1">Team Collaboration</h1>
-          <p className="text-muted-foreground">Manage your team members, roles, and project access.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-1">Team Collaboration</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Manage your team members, roles, and project access.</p>
         </div>
         
         <button 
           onClick={() => setIsInviteModalOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+          className="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
         >
           <Plus size={20} />
           <span>Invite Member</span>
