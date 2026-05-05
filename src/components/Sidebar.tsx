@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, KanbanSquare, CheckSquare, Users, BarChart2, Settings } from "lucide-react";
+import { LayoutDashboard, KanbanSquare, CheckSquare, Users, BarChart2, Settings, Inbox } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -9,6 +9,7 @@ export function Sidebar() {
 
   const navItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
+    { name: "Inbox", href: "/notifications", icon: Inbox },
     { name: "Kanban Board", href: "/board", icon: KanbanSquare },
     { name: "My Tasks", href: "/tasks", icon: CheckSquare },
     { name: "Team", href: "/team", icon: Users },

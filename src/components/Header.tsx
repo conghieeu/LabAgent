@@ -6,13 +6,24 @@ import Link from "next/link";
 
 export function Header() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
   const notifRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
         setIsNotifOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -35,13 +46,27 @@ export function Header() {
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-8">
       <div className="flex items-center gap-4 flex-1">
-        <div className="relative w-96">
+        <div className="relative w-96" ref={searchRef}>
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/50" size={18} />
           <input 
             type="text" 
             placeholder="Search tasks, projects..." 
+            onClick={() => setIsSearchOpen(true)}
             className="w-full bg-accent/50 border border-border rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
           />
+          {isSearchOpen && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg p-2 z-50 animate-in fade-in slide-in-from-top-2">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 py-2">Recent Searches</div>
+              <div className="p-2 hover:bg-accent rounded-lg cursor-pointer flex items-center gap-3 text-sm">
+                <Search size={14} className="text-muted-foreground" />
+                <span>"Dashboard UI Design"</span>
+              </div>
+              <div className="p-2 hover:bg-accent rounded-lg cursor-pointer flex items-center gap-3 text-sm">
+                <Search size={14} className="text-muted-foreground" />
+                <span>"System Requirements"</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -113,18 +138,40 @@ export function Header() {
           )}
         </div>
 
-        <div className="flex items-center gap-3 pl-5 border-l border-border">
+        <div className="flex items-center gap-3 pl-5 border-l border-border relative" ref={profileRef}>
           <div className="text-right hidden md:block">
             <p className="text-sm font-medium">Alex Morgan</p>
             <p className="text-xs text-foreground/50">Product Manager</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px] cursor-pointer hover:scale-105 transition-transform">
+          <div 
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary p-[2px] cursor-pointer hover:scale-105 transition-transform"
+          >
             <img 
               src="https://i.pravatar.cc/150?u=a042581f4e29026704d" 
               alt="User avatar" 
               className="w-full h-full rounded-full border-2 border-background object-cover"
             />
           </div>
+          
+          {isProfileOpen && (
+            <div className="absolute top-full right-0 mt-4 w-48 bg-card border border-border rounded-xl shadow-lg p-1 z-50 animate-in fade-in slide-in-from-top-2">
+              <div className="px-3 py-2 border-b border-border mb-1 md:hidden">
+                <p className="text-sm font-medium">Alex Morgan</p>
+                <p className="text-xs text-foreground/50">alex@vibeplan.com</p>
+              </div>
+              <Link href="/settings" onClick={() => setIsProfileOpen(false)} className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2">
+                My Profile
+              </Link>
+              <Link href="/settings" onClick={() => setIsProfileOpen(false)} className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2">
+                Settings
+              </Link>
+              <div className="h-px bg-border my-1"></div>
+              <button className="w-full text-left px-3 py-2 hover:bg-destructive/10 hover:text-destructive rounded-lg text-sm transition-colors flex items-center gap-2">
+                Log out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
