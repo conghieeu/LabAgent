@@ -36,7 +36,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-* {
+*:not(svg):not(svg *) {
   border-color: var(--border);
 }
 
@@ -62,4 +62,34 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #334155;
+}
+
+/* Recharts overrides */
+.recharts-responsive-container,
+.recharts-responsive-container *,
+.recharts-wrapper,
+.recharts-wrapper *,
+.recharts-surface,
+.recharts-surface * {
+  outline: none !important;
+}
+
+.recharts-responsive-container:focus,
+.recharts-wrapper:focus,
+.recharts-surface:focus,
+.recharts-wrapper *:focus,
+.recharts-surface *:focus,
+.recharts-wrapper *:focus-visible,
+.recharts-surface *:focus-visible {
+  outline: none !important;
+}
+
+.recharts-tooltip-item-value,
+.recharts-tooltip-item-name,
+.recharts-tooltip-item-separator {
+  color: #e2e8f0 !important;
+}
+
+.recharts-tooltip-item {
+  color: #e2e8f0 !important;
 }

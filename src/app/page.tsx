@@ -1,9 +1,10 @@
 "use client";
 
-import { CalendarDays, CheckCircle2, Clock, MoreHorizontal, Plus, TrendingUp } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock, MoreHorizontal, Plus, TrendingUp, Download, Eye, X } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useState, useRef, useEffect } from "react";
 
-const data = [
+const initialChartData = [
   { name: 'Mon', completed: 4, active: 2 },
   { name: 'Tue', completed: 7, active: 3 },
   { name: 'Wed', completed: 5, active: 6 },
@@ -14,6 +15,35 @@ const data = [
 ];
 
 export default function Dashboard() {
+  const [isChartMenuOpen, setIsChartMenuOpen] = useState(false);
+  const [chartData, setChartData] = useState(initialChartData);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const chartMenuRef = useRef<HTMLDivElement>(null);
+
+  const handleExportData = () => {
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + "Day,Completed,Active\n"
+      + chartData.map(e => `${e.name},${e.completed},${e.active}`).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "project_progress.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsChartMenuOpen(false);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (chartMenuRef.current && !chartMenuRef.current.contains(event.target as Node)) {
+        setIsChartMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div className="flex flex-col gap-8 max-w-7xl mx-auto">
       {/* Header Section */}
@@ -75,14 +105,46 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold">Project Progress</h2>
-            <button className="text-muted-foreground hover:text-foreground">
-              <MoreHorizontal size={20} />
-            </button>
+            <div className="relative" ref={chartMenuRef}>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsChartMenuOpen(!isChartMenuOpen);
+                }}
+                className={`p-1.5 rounded-lg transition-all ${isChartMenuOpen ? 'bg-accent text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                <MoreHorizontal size={20} />
+              </button>
+              
+              {isChartMenuOpen && (
+                <div 
+                  className="absolute right-0 top-10 w-48 bg-card border border-border rounded-xl shadow-xl p-1 z-50 animate-in fade-in zoom-in-95"
+                >
+                  <button 
+                    onClick={handleExportData}
+                    className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2 text-foreground/80 hover:text-foreground"
+                  >
+                    <Download size={16} />
+                    Export Data
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setIsDetailsModalOpen(true);
+                      setIsChartMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-accent rounded-lg text-sm transition-colors flex items-center gap-2 text-foreground/80 hover:text-foreground"
+                  >
+                    <Eye size={16} />
+                    View Details
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           <div className="h-[300px] w-full mt-4">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" style={{ outline: 'none' }}>
               <AreaChart
-                data={data}
+                data={chartData}
                 margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
               >
                 <defs>
@@ -96,11 +158,20 @@ export default function Dashboard() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px', color: 'hsl(var(--foreground))' }}
-                  itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  contentStyle={{ 
+                    backgroundColor: '#161920', 
+                    border: '1px solid rgba(255,255,255,0.08)', 
+                    borderRadius: '12px', 
+                    color: '#e2e8f0',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                    padding: '12px 16px',
+                  }}
+                  itemStyle={{ color: '#e2e8f0', fontSize: '13px', paddingTop: '4px' }}
+                  labelStyle={{ color: '#94a3b8', fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}
+                  cursor={{ stroke: 'rgba(139,92,246,0.3)', strokeWidth: 1 }}
                 />
                 <Area type="monotone" dataKey="active" stroke="#3b82f6" fillOpacity={1} fill="url(#colorActive)" />
                 <Area type="monotone" dataKey="completed" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorCompleted)" />
@@ -136,6 +207,53 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Details Modal */}
+      {isDetailsModalOpen && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-card border border-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-border flex items-center justify-between bg-accent/30 rounded-t-2xl">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Eye size={20} className="text-primary" />
+                Project Progress Details
+              </h2>
+              <button onClick={() => setIsDetailsModalOpen(false)} className="p-1 hover:bg-accent rounded-full transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="overflow-x-auto rounded-xl border border-border">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-xs text-muted-foreground uppercase bg-accent/50 border-b border-border">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">Day</th>
+                      <th className="px-4 py-3 font-medium">Completed Tasks</th>
+                      <th className="px-4 py-3 font-medium">Active Tasks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {chartData.map((row, i) => (
+                      <tr key={i} className="border-b border-border/50 last:border-0 hover:bg-accent/20 transition-colors">
+                        <td className="px-4 py-3 font-medium text-foreground">{row.name}</td>
+                        <td className="px-4 py-3 font-medium text-purple-500">{row.completed}</td>
+                        <td className="px-4 py-3 font-medium text-blue-500">{row.active}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="p-4 border-t border-border bg-accent/10 flex justify-end">
+              <button 
+                onClick={() => setIsDetailsModalOpen(false)}
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

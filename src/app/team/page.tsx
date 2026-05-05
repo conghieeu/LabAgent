@@ -109,7 +109,7 @@ export default function TeamPage() {
 
   return (
     <div className="flex flex-col gap-8 max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-1">Team Collaboration</h1>
           <p className="text-sm md:text-base text-muted-foreground">Manage your team members, roles, and project access.</p>
@@ -117,14 +117,14 @@ export default function TeamPage() {
         
         <button 
           onClick={() => setIsInviteModalOpen(true)}
-          className="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+          className="w-full lg:w-auto justify-center bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
         >
           <Plus size={20} />
           <span>Invite Member</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
         {teamMembers.map((member) => (
           <div key={member.id} className="bg-card border border-border rounded-xl p-6 shadow-sm hover:border-primary/50 transition-colors flex flex-col relative group">
             <div className="flex justify-between items-start mb-4">

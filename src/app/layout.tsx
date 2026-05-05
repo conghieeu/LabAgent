@@ -34,9 +34,9 @@ export default function RootLayout({
       <body className="min-h-full bg-background text-foreground flex" suppressHydrationWarning>
         <SidebarProvider>
           <Sidebar />
-          <div className="flex-1 md:ml-64 flex flex-col min-h-screen w-full transition-all duration-300">
+          <div className="flex-1 md:ml-64 flex flex-col min-h-screen min-w-0 overflow-x-hidden transition-all duration-300">
             <Header />
-            <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
+            <main className="flex-1 p-4 md:p-8">
               {children}
             </main>
           </div>

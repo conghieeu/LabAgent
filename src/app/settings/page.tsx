@@ -13,10 +13,10 @@ export default function SettingsPage() {
         <p className="text-muted-foreground">Manage your account settings and preferences.</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 mt-4">
+      <div className="flex flex-col lg:flex-row gap-8 mt-4">
         {/* Settings Navigation */}
-        <aside className="w-full md:w-64 shrink-0">
-          <nav className="flex md:flex-col space-x-2 md:space-x-0 md:space-y-1 overflow-x-auto pb-2 md:pb-0">
+        <aside className="w-full lg:w-64 shrink-0">
+          <nav className="flex lg:flex-col space-x-2 lg:space-x-0 lg:space-y-1 overflow-x-auto pb-2 lg:pb-0">
             <button 
               onClick={() => setActiveTab("profile")}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium w-full text-left whitespace-nowrap transition-colors ${activeTab === 'profile' ? 'bg-primary/10 text-primary' : 'text-foreground/70 hover:text-foreground hover:bg-accent'}`}
@@ -74,7 +74,7 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">First Name</label>
                   <input 
@@ -91,7 +91,7 @@ export default function SettingsPage() {
                     className="w-full bg-accent/50 border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                   />
                 </div>
-                <div className="space-y-2 md:col-span-2">
+                <div className="space-y-2 sm:col-span-2">
                   <label className="text-sm font-medium">Email Address</label>
                   <input 
                     type="email" 
@@ -99,7 +99,7 @@ export default function SettingsPage() {
                     className="w-full bg-accent/50 border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                   />
                 </div>
-                <div className="space-y-2 md:col-span-2">
+                <div className="space-y-2 sm:col-span-2">
                   <label className="text-sm font-medium">Job Title</label>
                   <input 
                     type="text" 
@@ -225,7 +225,7 @@ export default function SettingsPage() {
               <div className="space-y-8">
                 <div>
                   <h3 className="text-sm font-medium mb-3">Theme Preference</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="border-2 border-primary rounded-lg p-1 cursor-pointer">
                       <div className="bg-[#0f1115] rounded-md h-24 p-2 flex flex-col gap-2">
                         <div className="flex gap-2">

@@ -46,15 +46,15 @@ export function Header() {
   const hasUnread = notifications.some(n => n.unread);
 
   return (
-    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-4 md:px-8">
-      <div className="flex items-center gap-3 md:gap-4 flex-1">
+    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-4 md:px-6 lg:px-8 gap-4">
+      <div className="flex items-center gap-3 flex-1 min-w-0">
         <button 
-          className="md:hidden p-2 -ml-2 text-muted-foreground hover:text-foreground"
+          className="md:hidden p-2 -ml-2 text-muted-foreground hover:text-foreground shrink-0"
           onClick={toggleSidebar}
         >
           <Menu size={24} />
         </button>
-        <div className="relative hidden md:block w-96" ref={searchRef}>
+        <div className="relative hidden md:block w-full max-w-[240px] lg:max-w-[384px] transition-all" ref={searchRef}>
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/50" size={18} />
           <input 
             type="text" 
@@ -78,7 +78,7 @@ export function Header() {
         </div>
       </div>
 
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-3 lg:gap-5 shrink-0">
         
         {/* Notification Bell Dropdown */}
         <div className="relative" ref={notifRef}>
@@ -146,10 +146,10 @@ export function Header() {
           )}
         </div>
 
-        <div className="flex items-center gap-3 pl-5 border-l border-border relative" ref={profileRef}>
-          <div className="text-right hidden md:block">
-            <p className="text-sm font-medium">Alex Morgan</p>
-            <p className="text-xs text-foreground/50">Product Manager</p>
+        <div className="flex items-center gap-3 pl-3 lg:pl-5 border-l border-border relative" ref={profileRef}>
+          <div className="text-right hidden lg:block">
+            <p className="text-sm font-medium whitespace-nowrap">Alex Morgan</p>
+            <p className="text-xs text-foreground/50 whitespace-nowrap">Product Manager</p>
           </div>
           <div 
             onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -164,7 +164,7 @@ export function Header() {
           
           {isProfileOpen && (
             <div className="absolute top-full right-0 mt-4 w-48 bg-card border border-border rounded-xl shadow-lg p-1 z-50 animate-in fade-in slide-in-from-top-2">
-              <div className="px-3 py-2 border-b border-border mb-1 md:hidden">
+              <div className="px-3 py-2 border-b border-border mb-1 lg:hidden">
                 <p className="text-sm font-medium">Alex Morgan</p>
                 <p className="text-xs text-foreground/50">alex@vibeplan.com</p>
               </div>
