@@ -1,10 +1,12 @@
 "use client";
 
-import { Bell, Lock, User, Monitor, Save, ShieldAlert, Smartphone, Laptop } from "lucide-react";
+import { Bell, Lock, User, Monitor, Save, ShieldAlert, Smartphone, Laptop, Cpu, Bot, KeyRound, Eye, EyeOff, CheckCircle2, Trash2, Plus } from "lucide-react";
 import { useState } from "react";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [showKey, setShowKey] = useState<Record<string, boolean>>({});
+  const [activeProvider, setActiveProvider] = useState<string | null>(null);
 
   return (
     <div className="flex flex-col gap-8 max-w-5xl mx-auto w-full">
@@ -44,6 +46,13 @@ export default function SettingsPage() {
             >
               <Monitor size={18} />
               Appearance
+            </button>
+            <button 
+              onClick={() => setActiveTab("ai-models")}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium w-full text-left whitespace-nowrap transition-colors ${activeTab === 'ai-models' ? 'bg-primary/10 text-primary' : 'text-foreground/70 hover:text-foreground hover:bg-accent'}`}
+            >
+              <Cpu size={18} />
+              AI Models
             </button>
           </nav>
         </aside>
@@ -263,6 +272,202 @@ export default function SettingsPage() {
                     <button className="w-8 h-8 rounded-full bg-amber-500 hover:scale-110 transition-transform shadow-sm"></button>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* AI MODELS TAB */}
+          {activeTab === "ai-models" && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold mb-1">AI Providers & Models</h2>
+                    <p className="text-sm text-muted-foreground">Configure API keys for external models used by your AI Agents.</p>
+                  </div>
+                  <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+                    <Plus size={16} />
+                    Custom Provider
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* OpenAI Provider */}
+                  <div className={`border rounded-xl p-5 transition-all cursor-pointer ${activeProvider === 'openai' ? 'border-primary ring-1 ring-primary/20 bg-primary/5' : 'border-border hover:border-primary/50 bg-accent/20'}`} onClick={() => setActiveProvider(activeProvider === 'openai' ? null : 'openai')}>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                          <Bot size={22} />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-base">OpenAI</h3>
+                          <p className="text-xs text-muted-foreground">GPT-4o, GPT-3.5</p>
+                        </div>
+                      </div>
+                      <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-md">
+                        <CheckCircle2 size={12} /> Connected
+                      </span>
+                    </div>
+                    {activeProvider === 'openai' && (
+                      <div className="mt-4 pt-4 border-t border-border/50 space-y-4 animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-medium">API Key</label>
+                          <div className="relative">
+                            <input 
+                              type={showKey['openai'] ? "text" : "password"} 
+                              defaultValue="sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx"
+                              className="w-full bg-background border border-border rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono"
+                            />
+                            <KeyRound size={16} className="absolute left-3 top-3 text-muted-foreground" />
+                            <button onClick={() => setShowKey({...showKey, openai: !showKey['openai']})} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
+                              {showKey['openai'] ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-medium">Available Models</label>
+                          <div className="bg-background border border-border rounded-lg p-2 space-y-1">
+                            <label className="flex items-center gap-3 p-2 hover:bg-accent rounded-md cursor-pointer">
+                              <input type="checkbox" defaultChecked className="rounded border-border text-primary focus:ring-primary/50" />
+                              <span className="text-sm font-medium">gpt-4o</span>
+                            </label>
+                            <label className="flex items-center gap-3 p-2 hover:bg-accent rounded-md cursor-pointer">
+                              <input type="checkbox" defaultChecked className="rounded border-border text-primary focus:ring-primary/50" />
+                              <span className="text-sm font-medium">gpt-4-turbo</span>
+                            </label>
+                            <label className="flex items-center gap-3 p-2 hover:bg-accent rounded-md cursor-pointer">
+                              <input type="checkbox" className="rounded border-border text-primary focus:ring-primary/50" />
+                              <span className="text-sm font-medium text-muted-foreground">gpt-3.5-turbo</span>
+                            </label>
+                          </div>
+                        </div>
+                        <button className="w-full bg-accent hover:bg-accent/80 border border-border text-foreground py-2 rounded-lg text-sm font-medium transition-colors">
+                          Save Configuration
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Anthropic Provider */}
+                  <div className={`border rounded-xl p-5 transition-all cursor-pointer ${activeProvider === 'anthropic' ? 'border-primary ring-1 ring-primary/20 bg-primary/5' : 'border-border hover:border-primary/50 bg-accent/20'}`} onClick={() => setActiveProvider(activeProvider === 'anthropic' ? null : 'anthropic')}>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0">
+                          <Bot size={22} />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-base">Anthropic</h3>
+                          <p className="text-xs text-muted-foreground">Claude 3 Opus, Sonnet</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground bg-accent px-2 py-1 rounded-md border border-border">
+                        Not Configured
+                      </span>
+                    </div>
+                    {activeProvider === 'anthropic' && (
+                      <div className="mt-4 pt-4 border-t border-border/50 space-y-4 animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-medium">API Key</label>
+                          <div className="relative">
+                            <input 
+                              type={showKey['anthropic'] ? "text" : "password"} 
+                              placeholder="sk-ant-api03-..."
+                              className="w-full bg-background border border-border rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono"
+                            />
+                            <KeyRound size={16} className="absolute left-3 top-3 text-muted-foreground" />
+                            <button onClick={() => setShowKey({...showKey, anthropic: !showKey['anthropic']})} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
+                              {showKey['anthropic'] ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          </div>
+                        </div>
+                        <button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 rounded-lg text-sm font-medium transition-colors">
+                          Connect Anthropic
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Google Provider */}
+                  <div className={`border rounded-xl p-5 transition-all cursor-pointer ${activeProvider === 'google' ? 'border-primary ring-1 ring-primary/20 bg-primary/5' : 'border-border hover:border-primary/50 bg-accent/20'}`} onClick={() => setActiveProvider(activeProvider === 'google' ? null : 'google')}>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                          <Cpu size={22} />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-base">Google</h3>
+                          <p className="text-xs text-muted-foreground">Gemini 1.5 Pro</p>
+                        </div>
+                      </div>
+                      <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-md">
+                        <CheckCircle2 size={12} /> Connected
+                      </span>
+                    </div>
+                    {activeProvider === 'google' && (
+                      <div className="mt-4 pt-4 border-t border-border/50 space-y-4 animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-medium">API Key</label>
+                          <div className="relative">
+                            <input 
+                              type={showKey['google'] ? "text" : "password"} 
+                              defaultValue="AIzaSyAxxxxxxxxxxxxxxxxxxxxxx"
+                              className="w-full bg-background border border-border rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono"
+                            />
+                            <KeyRound size={16} className="absolute left-3 top-3 text-muted-foreground" />
+                            <button onClick={() => setShowKey({...showKey, google: !showKey['google']})} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
+                              {showKey['google'] ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          </div>
+                        </div>
+                        <button className="w-full bg-accent hover:bg-accent/80 border border-border text-foreground py-2 rounded-lg text-sm font-medium transition-colors">
+                          Save Configuration
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Custom Local Provider */}
+                  <div className={`border rounded-xl p-5 transition-all cursor-pointer ${activeProvider === 'local' ? 'border-primary ring-1 ring-primary/20 bg-primary/5' : 'border-border hover:border-primary/50 bg-accent/20'}`} onClick={() => setActiveProvider(activeProvider === 'local' ? null : 'local')}>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-violet-500/10 text-violet-500 flex items-center justify-center shrink-0">
+                          <Laptop size={22} />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-base">Local AI Server</h3>
+                          <p className="text-xs text-muted-foreground">Ollama, LM Studio</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground bg-accent px-2 py-1 rounded-md border border-border">
+                        Not Configured
+                      </span>
+                    </div>
+                    {activeProvider === 'local' && (
+                      <div className="mt-4 pt-4 border-t border-border/50 space-y-4 animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-medium">Base URL</label>
+                          <input 
+                            type="text" 
+                            placeholder="http://localhost:11434/v1"
+                            className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-medium">Model ID</label>
+                          <input 
+                            type="text" 
+                            placeholder="llama3"
+                            className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono"
+                          />
+                        </div>
+                        <button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 rounded-lg text-sm font-medium transition-colors">
+                          Connect Local AI
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
               </div>
             </div>
           )}

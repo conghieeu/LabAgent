@@ -3,13 +3,15 @@
 import { useState } from "react";
 
 import { Plus, Bot, Sparkles, Search, Filter } from "lucide-react";
-import { mockAgents } from "@/lib/mockData";
+import { mockAgents, Agent } from "@/lib/mockData";
 import { AgentCard } from "@/components/agents/AgentCard";
 import { CreateAgentModal } from "@/components/agents/CreateAgentModal";
+import { EditAgentModal } from "@/components/agents/EditAgentModal";
 
 export default function AgentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
 
   const filteredAgents = mockAgents.filter(agent => 
     agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -30,7 +32,7 @@ export default function AgentsPage() {
             </div>
             
             <button 
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => { setIsModalOpen(true); setEditingAgent(null); }}
               className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
             >
               <Plus size={20} />
@@ -84,7 +86,7 @@ export default function AgentsPage() {
             {filteredAgents.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredAgents.map(agent => (
-                  <AgentCard key={agent.id} agent={agent} />
+                  <AgentCard key={agent.id} agent={agent} onEdit={(agent) => setEditingAgent(agent)} />
                 ))}
               </div>
             ) : (
@@ -100,6 +102,12 @@ export default function AgentsPage() {
       <CreateAgentModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+      />
+
+      <EditAgentModal 
+        isOpen={!!editingAgent} 
+        onClose={() => setEditingAgent(null)} 
+        agent={editingAgent}
       />
     </>
   );

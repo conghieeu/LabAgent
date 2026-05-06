@@ -62,8 +62,8 @@ export function CreateAgentModal({ isOpen, onClose }: CreateAgentModalProps) {
         <div className="flex px-6 pt-6">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex-1 flex items-center">
-              <div className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-primary' : 'bg-accent'}`} />
-              {i < 3 && <div className="w-2" />}
+               <div className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-primary' : 'bg-accent'}`} />
+               {i < 3 && <div className="w-2" />}
             </div>
           ))}
         </div>

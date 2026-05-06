@@ -1,11 +1,12 @@
-import { Bot, Palette, LineChart, BrainCircuit, Activity, CheckCircle2 } from "lucide-react";
+import { Bot, Palette, LineChart, BrainCircuit, Activity, CheckCircle2, Settings2 } from "lucide-react";
 import { Agent } from "@/lib/mockData";
 
 interface AgentCardProps {
   agent: Agent;
+  onEdit?: (agent: Agent) => void;
 }
 
-export function AgentCard({ agent }: AgentCardProps) {
+export function AgentCard({ agent, onEdit }: AgentCardProps) {
   // Select icon based on avatar string
   const getIcon = () => {
     switch (agent.avatar) {
@@ -31,15 +32,26 @@ export function AgentCard({ agent }: AgentCardProps) {
             <span className="text-sm text-muted-foreground">{agent.role}</span>
           </div>
         </div>
-        <div className={`px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${
-          agent.status === 'working' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-accent text-muted-foreground'
-        }`}>
-          {agent.status === 'working' ? (
-            <Activity size={12} className="animate-pulse" />
-          ) : (
-            <CheckCircle2 size={12} />
+        <div className="flex items-center gap-2">
+          <div className={`px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${
+            agent.status === 'working' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-accent text-muted-foreground'
+          }`}>
+            {agent.status === 'working' ? (
+              <Activity size={12} className="animate-pulse" />
+            ) : (
+              <CheckCircle2 size={12} />
+            )}
+            <span className="capitalize">{agent.status}</span>
+          </div>
+          {onEdit && (
+            <button 
+              onClick={() => onEdit(agent)}
+              className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+              title="Edit Agent"
+            >
+              <Settings2 size={16} />
+            </button>
           )}
-          <span className="capitalize">{agent.status}</span>
         </div>
       </div>
 
